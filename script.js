@@ -9,6 +9,10 @@ const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 const btnScrollTo = document.querySelector('.btn--scroll-to');
 const section1 = document.querySelector('#section--1');
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
+const nav = document.querySelector('.nav');
 
 ////////////////////////////////
 // Modal window
@@ -89,6 +93,57 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
   }
 });
 
+// Implementing Tabbed Component
+tabsContainer.addEventListener('click', function (e) {
+  const clicked = e.target.closest('.operations__tab');
+
+  if (!clicked) return;
+
+  // Remove active classes
+  tabs.forEach(tab => tab.classList.remove('operations__tab--active'));
+
+  tabsContent.forEach(content =>
+    content.classList.remove('operations__content--active')
+  );
+
+  // Activating tab
+  clicked.classList.add('operations__tab--active');
+
+  // Activating content
+  document
+    .querySelector(`.operations__content--${clicked.dataset.tab}`)
+    .classList.add('operations__content--active');
+});
+
+// Implementing nav component
+const handleHover = function (e) {
+  const link = e.target;
+
+  if (link.classList.contains('nav__link')) {
+    const siblings = link.closest('.nav').querySelectorAll('.nav__link');
+    const logo = link.closest('.nav').querySelector('img');
+
+    siblings.forEach(el => {
+      if (el !== link) el.style.opacity = this;
+    });
+
+    logo.style.opacity = this;
+  }
+};
+
+nav.addEventListener('mouseover', handleHover.bind(0.5));
+
+nav.addEventListener('mouseout', handleHover.bind(1));
+
+// Implementing sticky nav
+window.addEventListener('scroll', function (e) {
+  const initialCoords = section1.getBoundingClientRect();
+
+  window.scrollY >= initialCoords.top
+    ? nav.classList.add('sticky')
+    : nav.classList.remove('sticky');
+});
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// TYPES OF EVENTS AND EVENT HANDLERS /////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -141,3 +196,27 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
 //   },
 //   true // In capture phase
 // );
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// TRAVERSING THE DOM /////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// const h1 = document.querySelector('h1');
+
+// // Going downwards: Selecting child elements.
+// console.log(h1.querySelectorAll('.highlight')); // All children of the element that have the 'highlight' class. Returns a NodeList.
+// console.log(h1.childNodes); // All direct children of the element, regardless of type. Returns a NodeList.
+// console.log(h1.children); // Element type direct children. Returns an HTML Collection.
+// console.log(h1.firstElementChild); // First child of the element. It only considers children of type element.
+// console.log(h1.lastElementChild); // Last child of the element. It only considers children of type element.
+
+// // Going upwards: Selecting parent elements.
+// console.log(h1.parentNode); // Direct parent node element (any type)
+// console.log(h1.parentElement); // Direct parent element
+// console.log(h1.closest('.header')); // Selects the closest parent element with an arbitrary class, ID, or label.
+// console.log(h1.closest('h1')); // Considers the element that calls the method as part of its parent elements.
+
+// // Going sideways: Selecting sibling elements.
+// console.log(h1.previousElementSibling); // Previous element sibling
+// console.log(h1.nextElementSibling); // Next element sibling
+// console.log(h1.previousSibling); // Previous sibling node (any type)
+// console.log(h1.nextSibling); // Next sibling node (any type)
