@@ -219,8 +219,6 @@ const observerLoadImg = new IntersectionObserver(loadImage, optionsLoadImg);
 lazyImages.forEach(img => observerLoadImg.observe(img));
 
 // Implementing slides
-// slider.style.overflow = 'visible';
-
 let currSlide = 0;
 const numSlides = slides.length - 1;
 
@@ -232,7 +230,7 @@ const goToSlide = function (slide) {
 
 goToSlide(0);
 
-btnRight.addEventListener('click', function (e) {
+const nextSlide = function () {
   if (currSlide === numSlides) {
     currSlide = 0;
   } else {
@@ -240,9 +238,9 @@ btnRight.addEventListener('click', function (e) {
   }
 
   goToSlide(currSlide);
-});
+};
 
-btnLeft.addEventListener('click', function (e) {
+const prevSlide = function () {
   if (currSlide === 0) {
     currSlide = numSlides;
   } else {
@@ -250,7 +248,10 @@ btnLeft.addEventListener('click', function (e) {
   }
 
   goToSlide(currSlide);
-});
+};
+
+btnRight.addEventListener('click', nextSlide);
+btnLeft.addEventListener('click', prevSlide);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// TYPES OF EVENTS AND EVENT HANDLERS /////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
