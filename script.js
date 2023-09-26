@@ -13,6 +13,13 @@ const tabs = document.querySelectorAll('.operations__tab');
 const tabsContainer = document.querySelector('.operations__tab-container');
 const tabsContent = document.querySelectorAll('.operations__content');
 const nav = document.querySelector('.nav');
+const header = document.querySelector('.header');
+const sections = document.querySelectorAll('.section');
+const lazyImages = document.querySelectorAll('img[data-src]');
+const slider = document.querySelector('.slider');
+const slides = document.querySelectorAll('.slide');
+const btnLeft = document.querySelector('.slider__btn--left');
+const btnRight = document.querySelector('.slider__btn--right');
 
 ////////////////////////////////
 // Modal window
@@ -136,12 +143,113 @@ nav.addEventListener('mouseover', handleHover.bind(0.5));
 nav.addEventListener('mouseout', handleHover.bind(1));
 
 // Implementing sticky nav
-window.addEventListener('scroll', function (e) {
-  const initialCoords = section1.getBoundingClientRect();
+// window.addEventListener('scroll', function (e) {
+//   const initialCoords = section1.getBoundingClientRect();
 
-  window.scrollY >= initialCoords.top
-    ? nav.classList.add('sticky')
-    : nav.classList.remove('sticky');
+//   window.scrollY >= initialCoords.top
+//     ? nav.classList.add('sticky')
+//     : nav.classList.remove('sticky');
+// });
+
+// Implementing sticky nav with Intersection Observer API
+const stickyNav = function (entries, _) {
+  const isIntersecting = entries[0].isIntersecting;
+
+  if (!isIntersecting) nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
+};
+
+const navHeight = nav.getBoundingClientRect().height;
+
+const obsOptions = {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${navHeight}px`,
+};
+
+const observerStickyNav = new IntersectionObserver(stickyNav, obsOptions);
+observerStickyNav.observe(header);
+
+// Implementing reveal sections
+const revealSection = function (entries, observer) {
+  const [entry] = entries;
+
+  if (!entry.isIntersecting) return;
+
+  entry.target.classList.remove('section--hidden');
+  observer.unobserve(entry.target);
+};
+
+const options = {
+  root: null,
+  threshold: 0.15,
+};
+
+const observerRevealSection = new IntersectionObserver(revealSection, options);
+
+sections.forEach(function (section) {
+  section.classList.add('section--hidden');
+  observerRevealSection.observe(section);
+});
+
+// Implementing lazy loading images
+const loadImage = function (entries, observer) {
+  const [entry] = entries;
+  const img = entry.target;
+
+  if (!entry.isIntersecting) return;
+
+  img.src = img.dataset.src;
+
+  img.addEventListener('load', function (e) {
+    img.classList.remove('lazy-img');
+  });
+
+  observer.unobserve(img);
+};
+
+const optionsLoadImg = {
+  root: null,
+  threshold: 0,
+  rootMargin: '-200px',
+};
+
+const observerLoadImg = new IntersectionObserver(loadImage, optionsLoadImg);
+
+lazyImages.forEach(img => observerLoadImg.observe(img));
+
+// Implementing slides
+// slider.style.overflow = 'visible';
+
+let currSlide = 0;
+const numSlides = slides.length - 1;
+
+const goToSlide = function (slide) {
+  slides.forEach(
+    (s, index) => (s.style.transform = `translateX(${(index - slide) * 100}%)`)
+  );
+};
+
+goToSlide(0);
+
+btnRight.addEventListener('click', function (e) {
+  if (currSlide === numSlides) {
+    currSlide = 0;
+  } else {
+    currSlide++;
+  }
+
+  goToSlide(currSlide);
+});
+
+btnLeft.addEventListener('click', function (e) {
+  if (currSlide === 0) {
+    currSlide = numSlides;
+  } else {
+    currSlide--;
+  }
+
+  goToSlide(currSlide);
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// TYPES OF EVENTS AND EVENT HANDLERS /////////////////////
